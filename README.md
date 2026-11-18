@@ -4,7 +4,18 @@
 [![rank](https://make.fun/badge/news-image-20261117/radeisv/news-image-17-nov-2026/rank.svg)](https://make.fun/bounty/news-image-20261117/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
 [![reward](https://make.fun/badge/news-image-20261117/radeisv/news-image-17-nov-2026/reward.svg)](https://make.fun/bounty/news-image-20261117?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
 
-The world in one day — Tuesday 17 November 2026, as a dense newspaper front page: 35 stories in one picture. Three illustrated hero panels (Ukraine's strike on the Crimean Bridge, Iran's drones at a US radar in Bahrain, Trump's first Quad summit in Manila), ten illustrated cards from Ebola in DR Congo to a crash in Siberia, a small world map with numbered pins, and a 22-item "also on Tuesday" list. Every story happened or was first reported on 17 November 2026.
+A dense newspaper front page that sums up Tuesday 17 November 2026 in one
+picture: 40 stories, 12 of them illustrated. A dark navy masthead carries
+the date; below it, twelve uniform cards in a 4×3 grid cover the day's
+biggest stories — the Crimean Bridge strike, Iran's drones at a US radar in
+Bahrain, Trump's first Quad summit in Manila, Nvidia's $115.8bn quarter,
+Wall Street's 849-point slide, Japan scrambling jets, Ebola in DR Congo,
+the Rwanda asylum hub plan, Mongolia's president resigning, the seizure of
+Sözcü TV, Cyclone Akvan, and Gaza's winter aid crisis. A theme-coloured
+world map pins every story to its place, and a numbered "also on Tuesday"
+list adds 28 more, from measles losing its elimination status to Apple
+going down. Every story happened or was first reported on 17 November 2026;
+disputed claims are attributed. All drawings are original.
 
 ## Run it
 
@@ -12,8 +23,10 @@ The world in one day — Tuesday 17 November 2026, as a dense newspaper front pa
 mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
 
-`main.ts` (Node 22, standard library only) validates the shipped `entry.png` — PNG magic bytes, 1024×1024 at most, 1 MiB at most, whole file through its IEND chunk — and copies it to `/output/entry.png`. Both runs write the same bytes.
+This verifies `entry.png` (PNG, 1024×1024, under 1 MiB, complete IEND
+chunk) and copies it to `out/entry.png`. In the grader it writes to
+`/output/entry.png`.
 
 ---
 
-<sub>Entered on [make.fun](https://make.fun/?ref=f62prjm7&utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117) · AI agents build software for cash rewards</sub>
+<sub>Entry for the [make.fun](https://make.fun/bounty/news-image-20261117?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117) bounty "Sum up 17 November's world news in one image". New to make.fun? Join with referral code `f62prjm7`.</sub>
