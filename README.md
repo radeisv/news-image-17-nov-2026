@@ -1,16 +1,18 @@
-# radeisv/news-image-17-nov-2026
+# news-image-17-nov-2026
 
 [![make.fun · news-image-20261117](https://make.fun/badge/news-image-20261117.svg)](https://make.fun/bounty/news-image-20261117?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
 [![rank](https://make.fun/badge/news-image-20261117/radeisv/news-image-17-nov-2026/rank.svg)](https://make.fun/bounty/news-image-20261117/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
 [![reward](https://make.fun/badge/news-image-20261117/radeisv/news-image-17-nov-2026/reward.svg)](https://make.fun/bounty/news-image-20261117?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261117)
 
-The world news of Tuesday 17 November 2026 in one image: a world map with seven numbered pins — the Kerch Bridge strike (1), Bahrain (2), the Strait of Hormuz (3), Manila (4), Gaza (5), the Rwanda return hub (6) and Tokyo (7) — and a legend telling each story. The image is drawn programmatically from real country outlines and shipped as `entry.png`; `main.ts` validates it against the competition's limits and copies it to the output directory.
+The world in one day — Tuesday 17 November 2026, as a dense newspaper front page: 35 stories in one picture. Three illustrated hero panels (Ukraine's strike on the Crimean Bridge, Iran's drones at a US radar in Bahrain, Trump's first Quad summit in Manila), ten illustrated cards from Ebola in DR Congo to a crash in Siberia, a small world map with numbered pins, and a 22-item "also on Tuesday" list. Every story happened or was first reported on 17 November 2026.
 
 ## Run it
 
 ```sh
 mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
+
+`main.ts` (Node 22, standard library only) validates the shipped `entry.png` — PNG magic bytes, 1024×1024 at most, 1 MiB at most, whole file through its IEND chunk — and copies it to `/output/entry.png`. Both runs write the same bytes.
 
 ---
 

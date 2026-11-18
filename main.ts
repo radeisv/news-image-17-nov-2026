@@ -1,69 +1,63 @@
-// News-image entry for make.fun "Sum up 17 November's world news in one image"
-// (competition news-image-20261117, Node 22, standard library only).
+// News-image entry for make.fun "Sum up 17 November's world news in one
+// image" (competition news-image-20261117, Node 22, standard library only).
 //
-// The entry is the finished world-map image beside this file: a stylised map
-// of Tuesday 17 November 2026's news under the masthead "TUESDAY 17 NOVEMBER
-// 2026", with seven numbered pins (1 Kerch Bridge, 2 Bahrain, 3 Hormuz,
-// 4 Manila, 5 Gaza, 6 Rwanda, 7 Tokyo) and a legend matching them. This
-// program does not draw anything at run time: it validates the shipped image
+// Round 2: a dense newspaper front page for Tuesday 17 November 2026 —
+// 35 stories in one picture. Three illustrated hero panels (the Crimean
+// Bridge, the Iran–Bahrain drones, the Manila Quad summit), ten illustrated
+// cards, a small world map with numbered pins, and a 22-item "also on
+// Tuesday" list. The finished page is the entry.png beside this file.
+//
+// This program draws nothing at run time: it validates the shipped page
 // against the competition's limits and copies it to the grader's output
 // directory, so both runs write the same bytes. Written as plain JavaScript
 // syntax on purpose, so it runs under any Node 22 without type stripping.
 //
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { copyFileSync, existsSync, readFileSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { createHash } from 'node:crypto';
 
-const MAX_BYTES = 1048576;
-const MAX_DIMENSION = 1024;
-const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const LIMIT_BYTES = 1048576;
+const LIMIT_PX = 1024;
+const MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const IEND = Buffer.from([0x49, 0x45, 0x4e, 0x44]);
 
-// Read the PNG's width and height straight out of its IHDR chunk: bytes 16-23
-// hold width then height as big-endian uint32, right after the 8-byte magic
-// and the 8-byte chunk-length/type header.
-function pngDimensions(buf) {
-  if (buf.length < 24 || !buf.subarray(0, 8).equals(PNG_MAGIC)) {
-    throw new Error('entry.png is not a PNG file (bad magic bytes)');
-  }
-  if (buf.toString('ascii', 12, 16) !== 'IHDR') {
-    throw new Error('entry.png has no IHDR chunk where one is expected');
-  }
-  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+const here = new URL('.', import.meta.url).pathname;
+const source = join(here, 'entry.png');
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const target = join(outDir, 'entry.png');
+
+if (!existsSync(source)) {
+  throw new Error('entry.png is missing next to main.ts');
+}
+const bytes = readFileSync(source);
+if (bytes.length > LIMIT_BYTES) {
+  throw new Error(`entry.png is ${bytes.length} bytes, over the 1 MiB limit`);
+}
+if (bytes.length < 24 || !bytes.subarray(0, 8).equals(MAGIC)) {
+  throw new Error('entry.png is not a PNG file (bad magic bytes)');
+}
+if (bytes.toString('ascii', 12, 16) !== 'IHDR') {
+  throw new Error('entry.png has no IHDR chunk where one is expected');
+}
+const width = bytes.readUInt32BE(16);
+const height = bytes.readUInt32BE(20);
+if (width > LIMIT_PX || height > LIMIT_PX) {
+  throw new Error(`entry.png is ${width}x${height}, over the 1024x1024 limit`);
+}
+// A whole PNG ends with its IEND chunk: the last 12 bytes are its length
+// (0), the letters IEND, and its checksum.
+if (!bytes.subarray(bytes.length - 8, bytes.length - 4).equals(IEND)) {
+  throw new Error('entry.png is truncated: no IEND chunk at the end');
 }
 
-function main() {
-  const here = new URL('.', import.meta.url).pathname;
-  const source = join(here, 'entry.png');
-  const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-  const dest = join(outDir, 'entry.png');
-
-  if (!existsSync(source)) {
-    throw new Error(`missing entry.png beside main.ts (looked in ${here})`);
-  }
-  const bytes = readFileSync(source);
-  if (bytes.length > MAX_BYTES) {
-    throw new Error(`entry.png is ${bytes.length} bytes, over the 1 MiB limit`);
-  }
-  const { width, height } = pngDimensions(bytes);
-  if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-    throw new Error(`entry.png is ${width}x${height}, over the 1024x1024 limit`);
-  }
-  // A whole PNG ends with its IEND chunk: 4 zero length bytes, the letters
-  // IEND, and its CRC. A file cut short fails here instead of shipping.
-  const tail = bytes.subarray(bytes.length - 12);
-  if (tail.readUInt32BE(0) !== 0 || tail.toString('ascii', 4, 8) !== 'IEND') {
-    throw new Error('entry.png is truncated (no trailing IEND chunk)');
-  }
-
-  copyFileSync(source, dest);
-  const written = statSync(dest).size;
-  if (written !== bytes.length) {
-    throw new Error(`copied ${written} bytes, expected ${bytes.length}`);
-  }
-  console.log(
-    `news-image-20261117: wrote ${width}x${height} PNG, ${written} bytes -> ${dest}`,
-  );
+mkdirSync(outDir, { recursive: true });
+copyFileSync(source, target);
+const written = statSync(target).size;
+if (written !== bytes.length) {
+  throw new Error(`copied ${written} bytes, expected ${bytes.length}`);
 }
-
-main();
+const sha = createHash('sha256').update(bytes).digest('hex');
+console.log(`news-image-20261117: front page, 35 stories, ${width}x${height} PNG, ` +
+  `${bytes.length} bytes, sha256 ${sha.slice(0, 12)}... -> ${target}`);
